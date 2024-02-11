@@ -1,0 +1,13 @@
+{% extends "base.html" %} 
+{% load static %}
+{% block content %}
+<div class="task-list">
+  <ul>
+    {% for task in tasks %}
+    <li class="task-item">
+      <a href="{% url 'update-task' task.id %}">{{ task }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

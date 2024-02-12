@@ -14,25 +14,17 @@
   {% csrf_token %} 
   {{ form|crispy }}
   {{ formset.management_form }}
+  {{ formset|crispy }}
 
   {% for p in formset %}
     {% comment %} {{ p.as_p }} {% endcomment %}
     {% if p.instance.image %}
-    <br/>
+      <p> Image: {{p.instance.image}}</p>
       <img src="{{ p.instance.image.url }}" alt="Task Image" width="500" height="500">
-      <label for="id_form-{{ forloop.counter0 }}-DELETE">Delete?</label>
-      <input type="checkbox" id="id_form-{{ forloop.counter0 }}-DELETE" name="form-{{ forloop.counter0 }}-DELETE">
+      <br/>
     {% endif %}
   
   {% endfor %}
-
-  <br/>
-  <br/>
-  <input type="file" name="image" id="image" multiple>
-  <label for="image">Select Images</label>
-
-  
-
   <br/>
   <br/>
   <div class="text-center">

@@ -1,14 +1,21 @@
 {% extends "base.html" %} 
 {% load static %}
 {% block content %}
+
 <div class="task-list">
   <nav class="navbar navbar-light bg-light justify-content-between">
-    <a class="navbar-brand">Navbar</a>
+    <a class="navbar-brand" href="{% url 'dashboard' %}">Task Manager</a>
     <form class="form-inline">
       <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name='search' value = {{ search_query }}>
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
     </form>
   </nav>
+  <b> Priority:  
+    <a href="?priority=Low" class="btn btn-outline-dark">Low</a>
+    <a href="?priority=Medium" class="btn btn-outline-dark">Medium</a>
+    <a href="?priority=High" class="btn btn-outline-dark">High</a>
+  </b>
+
   {% for task in tasks %}
   <div class="card">
     <div class="card-header">
@@ -17,10 +24,13 @@
       <h6 class="card-subtitle mb-2 text-muted">{{ task.description }}</h6>
     </div>
     <div class="card-body">
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="task-{{ task.id }}" {% if task.complete %}checked{% endif %}>
-        <label class="form-check-label" for="task-{{ task.id }}">Complete</label>
-      </div>
+      <b> Due Date: </b> {{ task.due_date }}<br>
+      <br>
+      {% if task.complete %}
+    <button type="button" class="btn btn-outline-success" disabled>Completed</button>
+    {% else %}
+    <button type="button"  class="btn btn-outline-danger" disabled>Incomplete</button>
+    {% endif %}
     </div>
     <div class="card-footer">
       <a href="{% url 'update-task' task.id %}" class="btn btn-primary">Edit</a>

@@ -3,20 +3,35 @@
 {% block content %}
 
 <div class="task-list">
-  <nav class="navbar navbar-light bg-light justify-content-between">
-    <a class="navbar-brand" href="{% url 'dashboard' %}">Task Manager</a>
-    <form class="form-inline">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name='search' value = {{ search_query }}>
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    </form>
-  </nav>
-  <b> Priority:  
+      <nav class="navbar navbar-light bg-light justify-content-between">
+        <h2><a class="navbar-brand" href="{% url 'dashboard' %}">Task Manager</a><h2>
+        <form class="form-inline action="{% url 'dashboard' %}"">
+        
+          <div class="row">
+            <div class="col">
+              <input class="form-control" type="search" placeholder="Search" aria-label="Search" name='search' value="{{ search_query }}">
+            </div>
+            <div class="col">
+              <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </div>
+            <div class="col">
+              <a href="{% url 'create-task' %}" class="btn btn-primary">Create Task</a>
+            </div>
+            <div class="col">
+              <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+            </div>
+          </div>
+        </form>
+      </nav>
+    <b> Priority:  
     <a href="?priority=Low" class="btn btn-outline-dark">Low</a>
     <a href="?priority=Medium" class="btn btn-outline-dark">Medium</a>
     <a href="?priority=High" class="btn btn-outline-dark">High</a>
   </b>
 
   {% for task in tasks %}
+  <br>
+  <br>
   <div class="card">
     <div class="card-header">
       <h1 class="card-title">{{ task.title }}</h1>
@@ -34,6 +49,7 @@
     </div>
     <div class="card-footer">
       <a href="{% url 'update-task' task.id %}" class="btn btn-primary">Edit</a>
+      <br><subtitle> Last Updated: {{ task.updated_at }}</subtitle>
     </div>
   </div>
   {% endfor %}

@@ -10,8 +10,8 @@ from .models import Task,Photo
 # Create your views here.
 
 
-def index(request):
-    return render(request, "index.html")
+# def index(request):
+#     return render(request, "index.html")
 
 
 def register(request):
@@ -72,8 +72,12 @@ def create_task(request):
 
 
 from django.forms.models import inlineformset_factory
+from django.shortcuts import render, redirect
+from .models import Task
 
 def update_task(request, id):
+    print("uuuuu")
+    print(id)
     task = Task.objects.get(id=id)
     PhotoFormSet = inlineformset_factory(Task, Photo, fields=('image',), extra=1)
     form = TaskForm(instance=task)
@@ -127,8 +131,15 @@ def update_task(request, id):
 
 
 
-def delete_task(request):
-    return HttpResponse("This is the delete page")
+def delete_task(request, id):
+    print("dddd")
+    print(id)
+    task = Task.objects.get(id=id)
+    task.delete()
+    return redirect("dashboard")
+    
+    
+    
 
 def dashboard(request):
     tasks = Task.objects.filter(user=request.user)

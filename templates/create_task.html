@@ -27,18 +27,23 @@
   {% endfor %}
 
   <br/>
-  {% comment %} <br/>
+  <br/>
   <input type="file" name="image" id="image" multiple>
-  <label for="image">Select Images</label> {% endcomment %}
+  <label for="image">Select Images</label>
 
-  <label for="id_form-{{ forloop.counter0 }}-image">Image</label>
-  <input type="file" id="id_form-{{ forloop.counter0 }}-image" name="form-{{ forloop.counter0 }}-image">
+  
 
   <br/>
   <br/>
   <div class="text-center">
     {% if update == True %} 
-      <button type="submit" class="btn btn-primary">Update Task</button>
+      {% if update == True %}
+        <button type="submit" class="btn btn-primary">Update Task</button>
+        {% comment %} <button type="submit" class="btn btn-primary" <a href="{% url 'delete-task' id %}" class="btn btn-danger"></a> >Delete Task</button> {% endcomment %}
+        <a href="{% url 'delete-task' id %}" class="btn btn-danger">Delete Task</a>
+      {% else %}
+        <button type="submit" class="btn btn-primary">Create Task</button>
+      {% endif %}
     {% else %}
       <button type="submit" class="btn btn-primary">Create Task</button>
     {% endif %}

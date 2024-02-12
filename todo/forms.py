@@ -18,13 +18,18 @@ class TaskForm(ModelForm):
     class Meta:
         model = Task
         fields = "__all__"
+        # images = forms.ImageField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
 
-class PhotoForm(ModelForm):
+class PhotoForm(forms.ModelForm):
+    image = forms.ImageField(
+        label="Image",
+        widget=forms.ClearableFileInput(),
+    )
     class Meta:
         model = Photo
-        fields = ['image']
+        fields = ("image",)
 
-TaskPhotoFormSet = inlineformset_factory(Task, Photo, form=PhotoForm, extra=1)
+# TaskPhotoFormSet = inlineformset_factory(Task, Photo, form=PhotoForm, extra=1)
 
 
         

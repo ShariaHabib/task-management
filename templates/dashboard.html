@@ -2,12 +2,30 @@
 {% load static %}
 {% block content %}
 <div class="task-list">
-  <ul>
-    {% for task in tasks %}
-    <li class="task-item">
-      <a href="{% url 'update-task' task.id %}">{{ task }}</a>
-    </li>
-    {% endfor %}
-  </ul>
+  <nav class="navbar navbar-light bg-light justify-content-between">
+    <a class="navbar-brand">Navbar</a>
+    <form class="form-inline">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name='search' value = {{ search_query }}>
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </nav>
+  {% for task in tasks %}
+  <div class="card">
+    <div class="card-header">
+      <h1 class="card-title">{{ task.title }}</h1>
+      <br><br>
+      <h6 class="card-subtitle mb-2 text-muted">{{ task.description }}</h6>
+    </div>
+    <div class="card-body">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="task-{{ task.id }}" {% if task.complete %}checked{% endif %}>
+        <label class="form-check-label" for="task-{{ task.id }}">Complete</label>
+      </div>
+    </div>
+    <div class="card-footer">
+      <a href="{% url 'update-task' task.id %}" class="btn btn-primary">Edit</a>
+    </div>
+  </div>
+  {% endfor %}
 </div>
 {% endblock %}

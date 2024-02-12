@@ -2,37 +2,46 @@
 {% load static %}
 {% load crispy_forms_tags %} 
 
-
-
-
 {% block content %}
-{% if update == True%} 
+{% if update == True %} 
   <h2><b> Update Task </h2>
-  {% else %}
+{% else %}
   <h2><b> Create Task </h2>
-  {% endif %}
-  <br/>
+{% endif %}
+<br/>
+
 <form method="POST" enctype="multipart/form-data">
-  {% csrf_token %} {{ form|crispy }}
-
-  {% for form in photo_formset %}
+  {% csrf_token %} 
   {{ form|crispy }}
-  {% if form.instance.image %}
-    <img src="{{ form.instance.image.url }}" alt="Task Image" width="100" height="100">
-  {% endif %}
-{% endfor %}
+  {{ formset.management_form }}
 
+  {% for p in formset %}
+    {% comment %} {{ p.as_p }} {% endcomment %}
+    {% if p.instance.image %}
+    <br/>
+      <img src="{{ p.instance.image.url }}" alt="Task Image" width="500" height="500">
+      <label for="id_form-{{ forloop.counter0 }}-DELETE">Delete?</label>
+      <input type="checkbox" id="id_form-{{ forloop.counter0 }}-DELETE" name="form-{{ forloop.counter0 }}-DELETE">
+    {% endif %}
+  
+  {% endfor %}
+
+  <br/>
+  {% comment %} <br/>
+  <input type="file" name="image" id="image" multiple>
+  <label for="image">Select Images</label> {% endcomment %}
+
+  <label for="id_form-{{ forloop.counter0 }}-image">Image</label>
+  <input type="file" id="id_form-{{ forloop.counter0 }}-image" name="form-{{ forloop.counter0 }}-image">
 
   <br/>
   <br/>
   <div class="text-center">
-   {% if update == True%} 
-    <button type="submit" class="btn btn-primary">Update Task</button>
+    {% if update == True %} 
+      <button type="submit" class="btn btn-primary">Update Task</button>
     {% else %}
-    <button type="submit" class="btn btn-primary">Create Task</button>
+      <button type="submit" class="btn btn-primary">Create Task</button>
     {% endif %}
   </div>
 </form>
-
-
 {% endblock %}

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-
+from django.db.models import Q
 from django.http import HttpResponse
 from django.forms import inlineformset_factory
 from .forms import TaskForm,LoginForm,PhotoForm
@@ -43,18 +43,24 @@ def login(request):
 def create_task(request):
     if request.method == "POST":
         form = TaskForm(request.POST)
-        if form.is_valid():
+        photo = PhotoForm(request.POST, request.FILES)
+        if form.is_valid() and photo.is_valid():
             form.save()
+            photo.save()
             return redirect("dashboard/")
     else:
         form = TaskForm()
-    return render(request, "create_task.html", {"form": form})
+        photo = PhotoForm()
+    return render(request, "create_task.html", {"form": form, "photo": photo})
 
 
 # def update_task(request,id):
 #     task = Task.objects.get(id=id)
 #     photo = Photo.objects.filter(task=task)
 #     print(task)
+    
+    
+    
 #     form = TaskForm(instance=task)
 #     if request.method == "POST":
 #         form = TaskForm(request.POST, instance=task)
@@ -62,31 +68,61 @@ def create_task(request):
 #             form.save()
 #             return redirect("dashboard/")
 #     return render(request, "update_task.html", {"form": form,"update":True,"photo":photo})
-    
+
+
+
+from django.forms.models import inlineformset_factory
 
 def update_task(request, id):
     task = Task.objects.get(id=id)
-    photos = Photo.objects.filter(task=task)
-
-    # Initialize the TaskForm with the task instance
-    task_form = TaskForm(instance=task)
-
-    # Create a formset for the Photo model
-    PhotoFormSet = inlineformset_factory(Task, Photo, form=PhotoForm, extra=1, can_delete=True)
-    photo_formset = PhotoFormSet(instance=task)
+    PhotoFormSet = inlineformset_factory(Task, Photo, fields=('image',), extra=1)
+    form = TaskForm(instance=task)
+    formset = PhotoFormSet(instance=task)
 
     if request.method == "POST":
-        # Populate the forms with the POST data and instance
-        task_form = TaskForm(request.POST, instance=task)
-        photo_formset = PhotoFormSet(request.POST, request.FILES, instance=task)
+        form = TaskForm(request.POST, instance=task)
+        formset = PhotoFormSet(request.POST, request.FILES, instance=task)
+        
+        if form.is_valid() and formset.is_valid():
+            form.save()
+            instances = formset.save(commit=False)
+            for instance in instances:
+                instance.task = task
+                instance.save()
+            formset.save()
+            return redirect("dashboard")
+        else:
+            print("INVALID!!!!")
+            print(formset.errors)
 
-        if task_form.is_valid() and photo_formset.is_valid():
-            task_form.save()  # Save the task details
-            photo_formset.save()  # Save the photo details
-            return redirect("dashboard")  # Redirect after successful update
+    return render(request, "update_task.html", {"form": form, "formset": formset, "update": True, "id": id})
 
-    # Render the template with the forms and photos
-    return render(request, "update_task.html", {"task_form": task_form, "photo_formset": photo_formset, "update": True})
+
+
+
+
+
+# def update_task(request, id):
+#     task = Task.objects.get(id=id)
+#     photos = Photo.objects.filter(task=task)
+    
+#     task_form = TaskForm(instance=task)
+    
+#     PhotoFormSet = inlineformset_factory(Task, Photo, form=PhotoForm, extra=1, can_delete=True)
+#     photo_formset = PhotoFormSet(instance=task)
+
+#     if request.method == "POST":
+#         task_form = TaskForm(request.POST, request.FILES, instance=task)
+#         # photo_formset = PhotoFormSet(request.POST, request.FILES, instance=task)
+
+#         if task_form.is_valid():
+#             print("Task form is valid")
+#             task_form.save() 
+#             photo_formset.save()  
+#             return redirect("dashboard")
+
+#     # Render the template with the forms and photos
+#     return render(request, "update_task.html", {"task_form": task_form, "update": True})
 
 
 
@@ -96,7 +132,15 @@ def delete_task(request):
 
 def dashboard(request):
     tasks = Task.objects.filter(user=request.user)
-    return render(request, "dashboard.html", {"tasks": tasks})
+    search_query = ''
+    tags = ''
+    if request.GET.get('search'):
+        search_query = request.GET.get('search')
+        tasks = Task.objects.filter(Q(title__icontains=search_query))
+        
+        print(tasks.count())
+        
+    return render(request, "dashboard.html", {"tasks": tasks,"search_query":search_query})
 
     
 

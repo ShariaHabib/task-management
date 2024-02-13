@@ -35,7 +35,8 @@ def login(request):
                 auth.login(request, user)
                 print("User logged in")
                 tasks = Task.objects.filter(user=request.user)
-                return render(request, "dashboard.html", {"tasks": tasks})
+                return redirect("dashboard")
+                # return render(request, "dashboard.html", {"tasks": tasks})
         
             else:
                 print("Invalid credentials")
@@ -103,15 +104,19 @@ def dashboard(request):
     search_query = ''
     priority = ''
     if request.GET.get('priority'):
+        print("priority")
         priority = request.GET.get('priority')
-        tasks = Task.objects.filter(Q(priority=priority))
+        print(priority)
+        print(request.user)
+        tasks = Task.objects.filter(Q(priority=priority), Q(user=request.user))
     
     
     if request.GET.get('search'):
         search_query = request.GET.get('search')
-        tasks = Task.objects.filter(Q(title__icontains=search_query))
+        tasks = Task.objects.filter(Q(title__icontains=search_query),Q(user=request.user))
         
         print(tasks.count())
+    print(tasks.count())
         
     return render(request, "dashboard.html", {"tasks": tasks,"search_query":search_query,"priority":priority})
 
